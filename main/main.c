@@ -145,8 +145,7 @@ void app_main(void) {
   //  ms since this is more than enough
   ESP_LOGI(APP_MAIN_TAG, "Channel switching started with a delay of: %d", CHANNEL_SWITCH_DELAY_MS);
   for (;;) {
-    esp_task_wdt_reset();
     sniffer_channel_switch(&sniffer);
-    vTaskDelay(CHANNEL_SWITCH_DELAY_MS);
+    vTaskDelay(CHANNEL_SWITCH_DELAY_MS / portTICK_PERIOD_MS);
   }
 }

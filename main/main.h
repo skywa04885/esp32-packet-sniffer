@@ -24,6 +24,7 @@
 #include <esp_spi_flash.h>
 #include <nvs_flash.h>
 #include <esp_task_wdt.h>
+#include <esp_int_wdt.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
 
@@ -31,7 +32,7 @@
 // Macros
 // ===================================================
 
-#define CHANNEL_SWITCH_DELAY_MS 1
+#define CHANNEL_SWITCH_DELAY_MS 10
 #define SNIFFER_TAG "SNIFF_SNIFF"
 #define APP_MAIN_TAG "APP_MAIN"
 #define SNIFFER_DEFAULT(V) sniffer_t V;                 \
