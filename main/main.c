@@ -3,6 +3,7 @@
 */
 
 #include "main.h"
+#include "df_ieee802_11.h"
 
 static sniffer_ram_pkt_t *__packetBuffer = NULL;
 static uint32_t __packetBufferSize = 0, __packetBufferAllocSize = 40, __packetCaptureCount;
