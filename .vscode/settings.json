@@ -1,0 +1,27 @@
+{
+  "C_Cpp.clang_format_style": "Visual Studio",
+  "editor.formatOnSave": false,
+  "[cpp]": {
+    "editor.quickSuggestions": true
+  },
+  "[c]": {
+    "editor.quickSuggestions": true
+  },
+  "C_Cpp.intelliSenseEngineFallback": "Enabled",
+  "files.associations": {
+    "freertos.h": "c",
+    "array": "c",
+    "chrono": "c",
+    "compare": "c",
+    "functional": "c",
+    "istream": "c",
+    "memory_resource": "c",
+    "ostream": "c",
+    "ranges": "c",
+    "ratio": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "variant": "c"
+  }
+}
