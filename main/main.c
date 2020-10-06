@@ -5,7 +5,7 @@
 #include "main.h"
 
 static sniffer_ram_pkt_t *__packetBuffer = NULL;
-static uint32_t __packetBufferSize = 0, __packetBufferAllocSize = 40;
+static uint32_t __packetBufferSize = 0, __packetBufferAllocSize = 40, __packetCaptureCount;
 static sniffer_t sniffer;
 
 /**
@@ -18,8 +18,8 @@ static void sniffer_pkt_cb(void *buffer, wifi_promiscuous_pkt_type_t type) {
 
   // Checks the size of the buffer, if it is at its limit or over it
   //  we want to clear it, and send the data over lora to the server
-  if (__packetBufferSize >= __packetBufferAllocSize) {
-    ESP_LOGD(SNIFFER_TAG, "Buffer of packets is full, transmitting and clearing ..");
+  if (__packetBufferSize >= __packetBufferAllocSize || ++__packetCaptureCount > 200000) {
+    ESP_LOGD(SNIFFER_TAG, "Buffer of packets is full, or too many measurements.. transmitting and clearing ..");
     __packetBufferSize = 0;
   }
 
@@ -163,6 +163,7 @@ void app_main(void) {
   // Creates the sniffer with the default config, after which we initialize
   //  the sniffer, which will start promiscuous mode
   SNIFFER_DEFAULT(sniffer);
+  sniffer.filter.filter_mask = WIFI_PROMIS_FILTER_MASK_ALL;
   sniffer_init(&sniffer);
   ESP_LOGI(APP_MAIN_TAG, "Sniffer started ..");
 
