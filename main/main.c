@@ -24,14 +24,14 @@ static void sniffer_pkt_cb(void *buffer, wifi_promiscuous_pkt_type_t type) {
 
   // Loggs the packet information to the console, although this only happens
   //  when we're compiling in debug mode
-  ESP_LOGD(SNIFFER_TAG, "%d -> Packet of type [%d] {\n", packet->rx_ctrl.timestamp, type);
-  ESP_LOGD(SNIFFER_TAG, "\tLen: %d\n", packet->rx_ctrl.sig_len);
-  ESP_LOGD(SNIFFER_TAG, "\tChannel: %d\n", packet->rx_ctrl.channel);
-  ESP_LOGD(SNIFFER_TAG, "\tSender: %02x:%02x:%02x:%02x:%02x:%02x\n", frame->address2[0], frame->address2[1],
+  ESP_LOGD(SNIFFER_TAG, "%d -> Packet of type [%d] {", packet->rx_ctrl.timestamp, type);
+  ESP_LOGD(SNIFFER_TAG, "\tLen: %d", packet->rx_ctrl.sig_len);
+  ESP_LOGD(SNIFFER_TAG, "\tChannel: %d", packet->rx_ctrl.channel);
+  ESP_LOGD(SNIFFER_TAG, "\tSender: %02x:%02x:%02x:%02x:%02x:%02x", frame->address2[0], frame->address2[1],
     frame->address2[2], frame->address2[3], frame->address2[4], frame->address2[5]);
-  ESP_LOGD(SNIFFER_TAG, "\tReceiver: %02x:%02x:%02x:%02x:%02x:%02x\n", frame->address1[0], frame->address1[1],
+  ESP_LOGD(SNIFFER_TAG, "\tReceiver: %02x:%02x:%02x:%02x:%02x:%02x", frame->address1[0], frame->address1[1],
     frame->address1[2], frame->address1[3], frame->address1[4], frame->address1[5]);
-  ESP_LOGD(SNIFFER_TAG, "}\n");
+  ESP_LOGD(SNIFFER_TAG, "}");
 
   // Loops over the array of packets, and checks if the currently specified mac address
   //  is already in there
@@ -145,6 +145,7 @@ void app_main(void) {
   //  ms since this is more than enough
   ESP_LOGI(APP_MAIN_TAG, "Channel switching started with a delay of: %d", CHANNEL_SWITCH_DELAY_MS);
   for (;;) {
+    esp_task_wdt_reset();
     sniffer_channel_switch(&sniffer);
     vTaskDelay(CHANNEL_SWITCH_DELAY_MS);
   }
