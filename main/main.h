@@ -27,6 +27,7 @@
 #include <esp_int_wdt.h>
 #include <esp_wifi.h>
 #include <esp_log.h>
+#include "esp_task_wdt.h"
 
 // ===================================================
 // Macros
@@ -35,9 +36,14 @@
 #define CHANNEL_SWITCH_DELAY_MS 10
 #define SNIFFER_TAG "SNIFF_SNIFF"
 #define APP_MAIN_TAG "APP_MAIN"
-#define SNIFFER_DEFAULT(V) sniffer_t V;                 \
-V.filter.filter_mask = WIFI_PROMIS_FILTER_MASK_MGMT;    \
+#define FREQ_TAG "SNIFF_FREQ"
+#define SNIFFER_DEFAULT(V) V.filter.filter_mask = WIFI_PROMIS_FILTER_MASK_MGMT;    \
 V.channel = 2
+#define CHECK_ERROR_CODE(A, B, C) \
+if (B != C) { \
+  ESP_LOGE(A, "TWDT Error !"); \
+  abort(); \
+}
 
 // ===================================================
 // Structs / Enums

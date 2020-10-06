@@ -6,6 +6,7 @@
 
 static sniffer_ram_pkt_t *__packetBuffer = NULL;
 static uint32_t __packetBufferSize = 0, __packetBufferAllocSize = 40;
+static sniffer_t sniffer;
 
 /**
  * This callback will be called from the driver, each time when a packet
@@ -103,6 +104,30 @@ static void nvs_init() {
   ESP_ERROR_CHECK(err);
 }
 
+static TaskHandle_t channel_switcher_handle;
+
+/**
+ * This task will switch the channel between 1 and 14, this will make sure
+ *  that we capture all of the packets
+ */
+static void channel_switcher_task(void *u) {
+  // Subscribe the current task to the watchdog, so we can later
+  //  reset it
+  CHECK_ERROR_CODE(APP_MAIN_TAG,esp_task_wdt_add(NULL), ESP_OK);
+  CHECK_ERROR_CODE(APP_MAIN_TAG, esp_task_wdt_status(NULL), ESP_OK);
+
+  // Starts the switching loop, each iteration we reset the watchdog
+  //  and switch the channel
+  while (true) {
+    CHECK_ERROR_CODE(APP_MAIN_TAG, esp_task_wdt_reset(), ESP_OK);
+    sniffer_channel_switch(&sniffer);
+    fflush(stdout);
+    vTaskDelay(CHANNEL_SWITCH_DELAY_MS / portTICK_PERIOD_MS);
+  }
+  
+  vTaskDelete(NULL);
+}
+
 /**
  * Initializes the wifi chip for the packet sniffer, this will have to be called
  *  once at the startup of the device
@@ -141,11 +166,7 @@ void app_main(void) {
   sniffer_init(&sniffer);
   ESP_LOGI(APP_MAIN_TAG, "Sniffer started ..");
 
-  // Performs the channel switching with the specified interval, we will use
-  //  ms since this is more than enough
-  ESP_LOGI(APP_MAIN_TAG, "Channel switching started with a delay of: %d", CHANNEL_SWITCH_DELAY_MS);
-  for (;;) {
-    sniffer_channel_switch(&sniffer);
-    vTaskDelay(CHANNEL_SWITCH_DELAY_MS / portTICK_PERIOD_MS);
-  }
+  // Creates the channel switching task, this will have the first priority
+  //  since we do not want to miss it
+  xTaskCreate(&channel_switcher_task, "FreqTask", 1024, NULL, 0, &channel_switcher_handle);
 }
